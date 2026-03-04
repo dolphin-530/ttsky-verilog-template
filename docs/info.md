@@ -7,9 +7,9 @@ You can also include images in this folder and reference them in the markdown. E
 512 kb in size, and the combined size of all images must be less than 1 MB.
 -->
 
-###Self-Timed Dual-Rail Pipeline (Synchronous Model)
+### Self-Timed Dual-Rail Pipeline (Synchronous Model)
 
-##Overview
+## Overview
 
 This project implements a four-stage self-timed dual-rail pipeline inspired by asynchronous design, emulated here using a synchronous system. This was inspire by my poster presentation for cse 185E. ChatGPT was used to generate this write up and to generate the cocoTB testbench, but not the RTL for the module itself.
 
@@ -17,7 +17,7 @@ Although the design uses a clock for simulation and synthesis purposes, the logi
 
 The pipeline accepts a single-bit data value and propagates it through four stages using dual-rail encoding and completion signaling.
 
-##Dual-Rail Data Encoding
+## Dual-Rail Data Encoding
 
 Instead of representing data with a single signal, each logical bit is encoded using two wires called the plus rail and the minus rail.
 
@@ -30,13 +30,13 @@ This encoding allows a stage to determine when data is valid without relying on 
 
 The design also includes a protocol violation detector that asserts if both rails are high simultaneously, indicating an illegal state.
 
-##Completion Signaling
+## Completion Signaling
 
 Each pipeline stage produces a completion signal derived from its dual-rail outputs. The completion signal is implemented using a NOR of the two rails.
 
 complete = ~(out_plus | out_minus)
 
-##This means:
+## This means:
 
 rails = 00 → complete = 1 (stage empty / spacer)
 rails = 01 → complete = 0 (stage holds data)
@@ -68,7 +68,7 @@ Precharge Phase
 
 After the downstream stage consumes the token, the stage clears its rails and returns to the spacer state so that the next token can propagate through the pipeline.
 
-##C-Element
+## C-Element
 
 The handshake protocol is coordinated using a C-element (consensus element). The C-element updates its output only when its two inputs agree.
 
