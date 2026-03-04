@@ -44,15 +44,15 @@ rails = 10 → complete = 0 (stage holds data)
 
 The completion signal is used for handshake coordination between adjacent pipeline stages.
 
-##Pipeline Stage Architecture
+## Pipeline Stage Architecture
 
 Each stage of the pipeline contains three key components:
 
-Dual-rail storage registers
+# Dual-rail storage registers
 
-Completion detection logic
+# Completion detection logic
 
-A consensus controller implemented with a C-element
+# A consensus controller implemented with a C-element
 
 Each stage operates in two alternating phases.
 
@@ -112,7 +112,7 @@ data = 0 → plus = 0, minus = 1
 
 The source logic holds the rails asserted until the first pipeline stage consumes the token. This mimics the behavior of asynchronous request signals, which remain asserted until acknowledged.
 
-Output Signals
+## Output Signals
 
 The eight output pins expose internal pipeline state so that the behavior of the circuit can be observed during simulation or on hardware.
 
@@ -177,19 +177,19 @@ If both rails become high simultaneously, the test fails immediately because the
 
 The testbench also enforces a timeout condition. If a token fails to reach the final pipeline stage within a fixed number of cycles, the test fails.
 
-Why the Testbench is Sufficient
+## Why the Testbench is Sufficient
 
 The testbench verifies three critical aspects of the design.
 
-Correct Data Encoding
+# Correct Data Encoding
 
 By injecting both logical values and checking the final dual-rail outputs, the test confirms that the pipeline preserves data values correctly.
 
-Correct Handshake Progression
+# Correct Handshake Progression
 
 Monitoring the stage occupancy indicators confirms that tokens propagate through all four stages of the pipeline.
 
-Protocol Correctness
+# Protocol Correctness
 
 Continuous checking of the violation signal ensures that the pipeline never enters the illegal dual-rail state.
 
