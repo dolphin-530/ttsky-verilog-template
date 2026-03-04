@@ -25,7 +25,7 @@ module tb ();
     $dumpvars(0, tb);
   end
 
-  tt_self_timed_sync_model user_project (
+  tt_um_dolphin_self_timed_sync_model user_project (
 `ifdef GL_TEST
       .VPWR(VPWR),
       .VGND(VGND),
