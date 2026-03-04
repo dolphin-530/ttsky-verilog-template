@@ -1,17 +1,17 @@
 # Tiny Tapeout project information
 project:
-  title:        ""      # Project title
-  author:       ""      # Your name
-  discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  ""      # One line description of what your project does
-  language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
-  clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
+  title:        "Self-Timed Dual-Rail Pipeline Demo"
+  author:       "Dalton Gaddy"
+  discord:      ""  # optional
+  description:  "Four-stage dual-rail self-timed pipeline (sync C-element model) with completion/violation outputs."
+  language:     "Verilog"
+  clock_hz:     100000  # 100 kHz used for the synchronous model (set to 0 if you plan to ignore clk)
 
   # How many tiles your design occupies? A single tile is about 167x108 uM.
-  tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
+  tiles: "1x1"
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "tt_um_example"
+  top_module:  "tt_um_dolphin_self_timed_dualrail"
 
   # List your project's source files here.
   # Source files must be in ./src and you must list each source file separately, one per line.
@@ -23,8 +23,8 @@ project:
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
-  ui[0]: ""
-  ui[1]: ""
+  ui[0]: "SEND_PULSE (rising edge injects token)"
+  ui[1]: "DATA_BIT (0/1 encoded into dual-rail)"
   ui[2]: ""
   ui[3]: ""
   ui[4]: ""
@@ -33,14 +33,14 @@ pinout:
   ui[7]: ""
 
   # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
-  uo[7]: ""
+  uo[0]: "STAGE0_TOKEN_PRESENT"
+  uo[1]: "STAGE1_TOKEN_PRESENT"
+  uo[2]: "STAGE2_TOKEN_PRESENT"
+  uo[3]: "STAGE3_TOKEN_PRESENT"
+  uo[4]: "SEND_PULSE_MONITOR"
+  uo[5]: "DUALRAIL_VIOLATION (any stage plus&minus)"
+  uo[6]: "STAGE3_MINUS"
+  uo[7]: "STAGE3_PLUS"
 
   # Bidirectional pins
   uio[0]: ""
@@ -54,3 +54,4 @@ pinout:
 
 # Do not change!
 yaml_version: 6
+
