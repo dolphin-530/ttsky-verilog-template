@@ -1,8 +1,11 @@
-`default_nettype none
+``default_nettype none
 `timescale 1ns / 1ps
 
-/* This testbench just instantiates the module and makes some convenient wires
-   that can be driven / tested by the cocotb test.py.
+/* Testbench scaffold for cocotb:
+   - Generates clk
+   - Drives reset/enable
+   - Initializes inputs
+   - Dumps FST for waveform viewing
 */
 module tb ();
 
@@ -22,28 +25,53 @@ module tb ();
   wire [7:0] uo_out;
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
+
 `ifdef GL_TEST
   wire VPWR = 1'b1;
   wire VGND = 1'b0;
 `endif
 
-  // Replace tt_um_example with your module name:
-  tt_um_example user_project (
+  // 100 MHz clock (10 ns period)
+  localparam integer CLK_PERIOD_NS = 10;
+  initial begin
+    clk = 1'b0;
+    forever #(CLK_PERIOD_NS/2) clk = ~clk;
+  end
 
-      // Include power ports for the Gate Level test:
+  // Basic init/reset sequence so cocotb starts from a known state
+  initial begin
+    // defaults
+    ena    = 1'b0;
+    rst_n  = 1'b0;
+    ui_in  = 8'h00;
+    uio_in = 8'h00;
+
+    // hold reset a few cycles
+    repeat (5) @(posedge clk);
+    ena   <= 1'b1;
+    repeat (2) @(posedge clk);
+    rst_n <= 1'b1;
+
+    // leave running; cocotb will drive ui_in/uio_in as needed
+  end
+
+  // Replace tt_um_example with your module name:
+  // (If your top module is tt_self_timed_sync_model, change it here.)
+  tt_self_timed_sync_model user_project (
+
 `ifdef GL_TEST
       .VPWR(VPWR),
       .VGND(VGND),
 `endif
 
-      .ui_in  (ui_in),    // Dedicated inputs
-      .uo_out (uo_out),   // Dedicated outputs
-      .uio_in (uio_in),   // IOs: Input path
-      .uio_out(uio_out),  // IOs: Output path
-      .uio_oe (uio_oe),   // IOs: Enable path (active high: 0=input, 1=output)
-      .ena    (ena),      // enable - goes high when design is selected
-      .clk    (clk),      // clock
-      .rst_n  (rst_n)     // not reset
+      .ui_in  (ui_in),
+      .uo_out (uo_out),
+      .uio_in (uio_in),
+      .uio_out(uio_out),
+      .uio_oe (uio_oe),
+      .ena    (ena),
+      .clk    (clk),
+      .rst_n  (rst_n)
   );
 
 endmodule
