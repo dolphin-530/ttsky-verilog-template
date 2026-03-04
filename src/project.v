@@ -34,14 +34,42 @@ module tt_self_timed_sync_model (
   wire send_pulse = ui_in[0] & ~send_d;
 
   // create dual rail out of single rail input
-  wire bitv = ui_in[1]; //actual value of data bit
-  wire src_plus  = send_pulse &  bitv;   // 10 for '1'
-  wire src_minus = send_pulse & ~bitv;   // 01 for '0'
-  wire src_comp  = ~(src_plus | src_minus); //signals completion from previous stage aka valid in
+ // create dual rail source that holds token until stage0 consumes it
+ wire c0, c1, c2, c3;
+wire bitv = ui_in[1];
+
+reg src_plus_r;
+reg src_minus_r;
+
+always @(posedge clk or negedge rst_n) begin
+  if (!rst_n) begin
+    src_plus_r  <= 1'b0;
+    src_minus_r <= 1'b0;
+  end else begin
+
+    // if no token currently held, latch one when button pressed
+    if ((src_plus_r | src_minus_r) == 1'b0) begin
+      if (send_pulse) begin
+        src_plus_r  <= bitv;
+        src_minus_r <= ~bitv;
+      end
+    end
+
+    // if stage0 consumed token (no longer empty), clear source
+    else if (c0 == 1'b0) begin
+      src_plus_r  <= 1'b0;
+      src_minus_r <= 1'b0;
+    end
+  end
+end
+
+wire src_plus  = src_plus_r;
+wire src_minus = src_minus_r;
+wire src_comp  = ~(src_plus | src_minus);   // NOR completion (empty=1)
 
 //doing 4 stages, all need dual rail wires and complete signals
   wire s0_plus, s0_minus, s1_plus, s1_minus, s2_plus, s2_minus, s3_plus, s3_minus;
-  wire c0, c1, c2, c3;
+  
 
  //four stages
   dr_pipe_stage_sync st0 (
@@ -75,7 +103,7 @@ module tt_self_timed_sync_model (
     .clk(clk), .rst_n(rst_n),
     .in_plus(s2_plus), .in_minus(s2_minus),
     .prev_complete(c2),
-    .next_complete(1'b1),
+    .next_complete(c3),
     .complete(c3),
     .out_plus(s3_plus), .out_minus(s3_minus)
   );
